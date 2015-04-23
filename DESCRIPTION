@@ -1,0 +1,11 @@
+Package: oryzr
+Type: Package
+Title: Work with Oryza sativa gene identifiers
+Version: 0.0.1
+Date: 2015-04-23
+Author: Who wrote it
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+URL: https://github.com/Tom14-/oryzr
+BugReports: https://github.com/Tom14-/oryzr/issues
