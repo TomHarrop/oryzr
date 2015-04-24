@@ -1,7 +1,7 @@
 #' LocToRefSeq
 #' 
 #' Convert MSU identifiers to Rap-DB identifiers and map them to RefSeq mRNA 
-#' identifiers.
+#' identifiers. Currently only conversions \strong{from} MSU ID are implemented.
 #' 
 #' Conversion from MSU to Rap-DB identifiers uses the table of RAP-DB and MSU 
 #' IDs \href{http://rapdb.dna.affrc.go.jp/download/irgsp1.html}{available from 
@@ -19,8 +19,8 @@
 #'   secondary searches for genes not matched in the Oryzabase data.
 #' @return Returns a list of two \code{data.frame}s, matched for MSU loci that 
 #'   were successfully matched to refSeq IDs and notMatched for ones that 
-#'   weren't. The \code{data.frame}s each have four columns: tigrId (MSU ID),
-#'   refseqRnaNucleotideAccessionNo (refSeq mRNA ID), rapLocus (Rap-DB ID) and
+#'   weren't. The \code{data.frame}s each have four columns: tigrId (MSU ID), 
+#'   refseqRnaNucleotideAccessionNo (refSeq mRNA ID), rapLocus (Rap-DB ID) and 
 #'   symbols (CSGNL recommended gene symbol(s)).
 #'   
 #' @import data.table

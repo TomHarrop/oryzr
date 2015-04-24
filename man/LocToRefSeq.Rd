@@ -21,7 +21,7 @@ Returns a list of two \code{data.frame}s, matched for MSU loci that
 }
 \description{
 Convert MSU identifiers to Rap-DB identifiers and map them to RefSeq mRNA
-identifiers.
+identifiers. Currently only conversions \strong{from} MSU ID are implemented.
 }
 \details{
 Conversion from MSU to Rap-DB identifiers uses the table of RAP-DB and MSU
