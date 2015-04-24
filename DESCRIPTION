@@ -7,11 +7,11 @@ Authors@R: person("Tom", "Harrop", email = "twharrop@gmail.com",
        role = c("aut", "cre"))
 Description: Convert between different types of gene identifiers for Oryza
     sativa Nipponbare genes (MSU, Rap-DB, CSGNL, RefSeq mRNA).
-License: What license is it under?
+License: GPL-3
 URL: https://github.com/Tom14-/oryzr
 BugReports: https://github.com/Tom14-/oryzr/issues
 Imports: 
+    data.table (>= 1.9.4),
     ggplot2 (>= 1.0.1),
-    data.table (>= 1.9.4)
 Suggests: 
 Depends: R (>= 3.2.0)
