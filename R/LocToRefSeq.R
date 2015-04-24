@@ -40,8 +40,7 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
         # output
         matchedRecords <- RapMsuRefSeq[unique(unlist(OpenRepGrid::sapply_pb(LOCs, 
             function(x) grep(x, RapMsuRefSeq$tigrId, ignore.case = TRUE)))), 
-            ][, 
-            list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)]
+            ][, list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)]
     } else {
         # sapply over LOCs with grep, unlist results and select columns to
         # output
@@ -89,8 +88,14 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
     rematchedRecords[, `:=`(rapLocus, toupper(rapLocus))]
     data.table::setkey(rematchedRecords, rapLocus)
     
+    unmatchedRecords <- rematchedRecords[refseqRnaNucleotideAccessionNo == 
+        ""]
+    # only search rapLocus ids that really don't already have a refSeqID
+    unmatchedIds <- unmatchedRecords[!rapLocus %in% rematchedRecords[!refseqRnaNucleotideAccessionNo == 
+        ""]$rapLocus]$rapLocus
+    
     # biomaRt search for unmatched records
-    if (useBiomart) {
+    if (useBiomart & length(unmatchedIds > 0)) {
         if (!requireNamespace("biomaRt", quietly = TRUE)) {
             stop("biomaRt is not installed. Either install it or use useBiomart == FALSE")
         }
@@ -98,11 +103,6 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
         message("Preparing biomaRt object")
         ensembl <- biomaRt::useMart(biomart = "ENSEMBL_MART_PLANT", dataset = "osativa_eg_gene")
         
-        unmatchedRecords <- rematchedRecords[refseqRnaNucleotideAccessionNo == 
-            ""]
-        # only search rapLocus ids that really don't already have a refSeqID
-        unmatchedIds <- unmatchedRecords[!rapLocus %in% rematchedRecords[!refseqRnaNucleotideAccessionNo == 
-            ""]$rapLocus]$rapLocus
         # search BioMart
         message(paste(dateF(), "Running biomaRt query for", length(unmatchedIds), 
             "record(s) with no RefSeqID in Oryzabase"))
