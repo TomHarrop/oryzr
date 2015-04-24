@@ -60,7 +60,7 @@ download.file("http://www.shigen.nig.ac.jp/rice/oryzabase/tool/riceIdChecker/bui
 RapMsuRefSeq <- data.table::data.table(read.table(unzip(temp, unzip(temp, 
     list = TRUE)[, 1], exdir = "data-raw", overwrite = TRUE), header = TRUE, 
     fill = TRUE, sep = "\t", stringsAsFactors = FALSE))
-setkey(RapMsuRefSeq, tigrId)
+data.table::setkey(RapMsuRefSeq, tigrId)
 
 # timestamp
 attr(RapMsuRefSeq, "dateRetrieved") <- date()
