@@ -14,4 +14,6 @@ Imports:
     data.table (>= 1.9.4),
     ggplot2 (>= 1.0.1),
 Suggests: 
-Depends: R (>= 3.2.0)
+Depends:
+    R (>= 3.2.0)
+LazyData: true
