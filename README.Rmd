@@ -25,5 +25,7 @@ This R package is for converting between different types of gene identifiers for
 * LocToRefSeq: Convert MSU identifiers to Rap-DB identifiers and map them to RefSeq mRNA identifiers.
 
 #### Installation
+
 * Make sure you have Hadley Wickham's `devtools` installed: `install.packages("devtools")`
 * Install `oryzr` from GitHub: `devtools::install_github('Tom14-/oryzr')`
+
