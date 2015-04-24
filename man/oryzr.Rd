@@ -6,10 +6,15 @@
 \alias{oryzr-package}
 \title{oryzr: Work with Oryza sativa gene identifiers.}
 \description{
-Convert between different types of gene identifiers for \emph{Oryza sativa} Nipponbare genes (MSU, Rap-DB, CSGNL, RefSeq mRNA).
+Convert between different types of gene identifiers for \emph{Oryza sativa}
+Nipponbare genes (MSU, Rap-DB, CSGNL, RefSeq mRNA).
 }
 \section{Functions}{
-
-The oryzr functions ...
+ \itemize{
+    \item \code{\link{LocToGeneName}}: Convert MSU
+    identifiers to CSGNL gene names and symbols and generate a label for
+    plotting if requested.
+    \item \code{\link{foo}}: A test function.
+  }
 }
 

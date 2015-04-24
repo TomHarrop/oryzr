@@ -1,10 +1,15 @@
 #' oryzr: Work with Oryza sativa gene identifiers.
-#'
-#' Convert between different types of gene identifiers for \emph{Oryza sativa} Nipponbare genes (MSU, Rap-DB, CSGNL, RefSeq mRNA).
-#'  
-#' @section Functions:
-#' The oryzr functions ...
-#'
+#' 
+#' Convert between different types of gene identifiers for \emph{Oryza sativa} 
+#' Nipponbare genes (MSU, Rap-DB, CSGNL, RefSeq mRNA).
+#' 
+#' @section Functions: \itemize{
+#'     \item \code{\link{LocToGeneName}}: Convert MSU
+#'     identifiers to CSGNL gene names and symbols and generate a label for
+#'     plotting if requested.
+#'     \item \code{\link{foo}}: A test function.
+#'   }
+#'   
 #' @docType package
 #' @name oryzr
 
@@ -27,5 +32,5 @@ NULL
 #' foo(TRUE)
 
 foo <- function(x) {
-  return(x)
-}
+    return(x)
+} 
