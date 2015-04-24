@@ -28,22 +28,17 @@
 #' LocToGeneName(c('LOC_Os01g03340', 'LOC_Os01g09410', 'LOC_Os01g17396', 'LOC_Os01g18800', 'LOC_Os01g44069', 'LOC_Os01g45470', 'LOC_Os01g53880', 'LOC_Os01g64730', 'LOC_Os01g71820', 'LOC_Os02g07110', 'LOC_Os02g26680', 'LOC_Os02g26700', 'LOC_Os02g41904', 'LOC_Os02g42880', 'LOC_Os02g44630', 'LOC_Os03g15530', 'LOC_Os03g22270', 'LOC_Os03g61160', 'LOC_Os04g58710', 'LOC_Os06g06750', 'LOC_Os07g32170', 'LOC_Os08g24930', 'LOC_Os08g31980', 'LOC_Os09g07154', 'LOC_Os09g25330', 'LOC_Os09g31438', 'LOC_Os10g07229', 'LOC_Os10g18870', 'LOC_Os10g26340', 'LOC_Os10g42210', 'LOC_Os10g42220'))
 #' LocToGeneName(c('LOC_Os03g03034', 'LOC_Os06g36560', 'LOC_Os01g50910'))
 
-LocToGeneName <- function(LOCs, plotLabels = TRUE, shortLabels = FALSE, simpleLabels = FALSE) {
+LocToGeneName <- function(LOCs, plotLabels = TRUE, shortLabels = FALSE, 
+    simpleLabels = FALSE) {
     
     # this needs to be fine tuned. Currently, if one MSU ID matches more
     # than one RAP-DB id, only the first one is used.
     if (requireNamespace("OpenRepGrid", quietly = TRUE)) {
-        message(
-          "Matching MSU IDs to Rap-DB IDs. This could take some time."
-          )
+        message("Matching MSU IDs to Rap-DB IDs. This could take some time.")
         Rap.vector <- OpenRepGrid::sapply_pb(LOCs, function(x) RAPMSU[grepl(x, 
             RAPMSU$MSU_ID, ignore.case = TRUE), ][1, ]$Rap_ID)
     } else {
-        message(
-          "Matching MSU IDs to Rap-DB IDs. This could take some time. If you
-          would like to see a progress bar please install OpenRepGrid from
-          CRAN."
-          )
+        message("Matching MSU IDs to Rap-DB IDs. This could take some time. If you would like to see a progress bar please install OpenRepGrid from CRAN.")
         Rap.vector <- sapply(LOCs, function(x) RAPMSU[grepl(x, RAPMSU$MSU_ID, 
             ignore.case = TRUE), ][1, ]$Rap_ID)
     }
@@ -64,7 +59,7 @@ LocToGeneName <- function(LOCs, plotLabels = TRUE, shortLabels = FALSE, simpleLa
     LocToLabels$symbols[!grepl("[A-Za-z]", LocToLabels$symbols)] <- NA
     LocToLabels$names[!grepl("[A-Za-z]", LocToLabels$names)] <- NA
     
-    # generate an optional labels field for graphing    
+    # generate an optional labels field for graphing
     if (plotLabels & !shortLabels & !simpleLabels) {
         labels <- is.na(LocToLabels$symbols) & is.na(LocToLabels$names)
         LocToLabels$labels <- labels
@@ -91,8 +86,8 @@ LocToGeneName <- function(LOCs, plotLabels = TRUE, shortLabels = FALSE, simpleLa
         }
     }
     if (plotLabels & simpleLabels & !shortLabels) {
-      LocToLabels$labels <- LocToLabels$symbols
-      LocToLabels$labels[is.na(LocToLabels$labels)] <- rownames(LocToLabels)[is.na(LocToLabels$labels)]
+        LocToLabels$labels <- LocToLabels$symbols
+        LocToLabels$labels[is.na(LocToLabels$labels)] <- rownames(LocToLabels)[is.na(LocToLabels$labels)]
     }
     
     return(LocToLabels)

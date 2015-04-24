@@ -51,6 +51,20 @@ rownames(GeneListByID.frame) <- GeneListByID.frame$RAP_id
 # timestamp
 attr(GeneListByID.frame, "dateRetrieved") <- date()
 
+# RapMsuRefSeq ----------------------------------------
+
+# download data.table of rice id build table from oryzabase
+temp <- tempfile()
+download.file("http://www.shigen.nig.ac.jp/rice/oryzabase/tool/riceIdChecker/build5/download", 
+    method = "auto", temp)
+RapMsuRefSeq <- data.table::data.table(read.table(unzip(temp, unzip(temp, 
+    list = TRUE)[, 1]), header = TRUE, fill = TRUE, sep = "\t", stringsAsFactors = FALSE))
+setkey(RapMsuRefSeq, tigrId)
+
+# timestamp
+attr(RapMsuRefSeq, "dateRetrieved") <- date()
+
 # Save data ----------------------------------------
 
-devtools::use_data(RAPMSU, GeneListByID.frame, internal = TRUE, overwrite = TRUE) 
+devtools::use_data(RAPMSU, GeneListByID.frame, RapMsuRefSeq, internal = TRUE, 
+    overwrite = TRUE) 

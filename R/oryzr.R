@@ -4,33 +4,14 @@
 #' Nipponbare genes (MSU, Rap-DB, CSGNL, RefSeq mRNA).
 #' 
 #' @section Functions: \itemize{
-#'     \item \code{\link{LocToGeneName}}: Convert MSU
-#'     identifiers to CSGNL gene names and symbols and generate a label for
-#'     plotting if requested.
-#'     \item \code{\link{foo}}: A test function.
+#'   \item \code{\link{LocToGeneName}}: Convert MSU 
+#'   identifiers to CSGNL gene names and symbols and generate a label for 
+#'   plotting if requested.
+#'   \item \code{\link{LocToRefSeq}}: Convert MSU
+#'   identifiers to Rap-DB identifiers and map them to RefSeq mRNA identifiers. 
 #'   }
 #'   
 #' @docType package
 #' @name oryzr
 
 NULL
-
-#' Test function.
-#' 
-#' This function doesn't do anything.
-#' 
-#' This awesome function doesn't do anything, it just returns the input. Blahdy 
-#' blah blah blah.
-#' 
-#' @param x Anything
-#' @return Returns the input. Bof sadfasdf  asdfkljsd dfjfkladjf sadfjsdkf
-#'   asdfjsdf sjdfsdfjskldf fjjja asdlfjk asdfl
-#' @export
-#' @examples
-#' foo('abc')
-#' foo(42)
-#' foo(TRUE)
-
-foo <- function(x) {
-    return(x)
-} 

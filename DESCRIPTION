@@ -11,9 +11,9 @@ License: GPL-3
 URL: https://github.com/Tom14-/oryzr
 BugReports: https://github.com/Tom14-/oryzr/issues
 Imports: 
-    data.table (>= 1.9.4),
-    ggplot2 (>= 1.0.1),
+    data.table (>= 1.9.4)
 Suggests:
+    biomaRt (>= 2.24.0),
     OpenRepGrid (>= 0.1.9)
 Depends:
     R (>= 3.2.0)

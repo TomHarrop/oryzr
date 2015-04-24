@@ -12,14 +12,15 @@ LocToGeneName(LOCs, plotLabels = TRUE, shortLabels = FALSE,
 
 \item{plotLabels}{Boolean (default TRUE). Should labels for plotting be
 generated? Labels will be of the format LOC_ID\\nGene name(s) unless
-shortLabels == TRUE.}
+\code{shortLabels == TRUE}.}
 
 \item{shortLabels}{Boolean (default FALSE). Return labels in format
 LOC_ID\\nGene symbols(s). Has no effect if \code{plotLabels == FALSE}.}
 
 \item{simpleLabels}{Boolean (default FALSE). Return \emph{really} short
 labels (CSGNL symbol or MSU ID \strong{only}). Useful \emph{e.g.} in
-heatmaps with lots of genes. Has no effect if shortLabels == FALSE}
+heatmaps with lots of genes. Has no effect if \code{plotLabels == FALSE}
+and is overriden by \code{shortLabels == TRUE}.}
 }
 \value{
 Returns a data.frame with columns RapID (RAP-DB gene identifier),
