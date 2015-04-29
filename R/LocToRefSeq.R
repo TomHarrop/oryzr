@@ -15,7 +15,7 @@
 #' MSU IDs.
 #' 
 #' @param LOCs Character vector of MSU locus identifiers
-#' @param useBiomart Boolean (default TRUE). If biomaRt is installed, use it for
+#' @param useBiomart Boolean (default \code{TRUE}). If biomaRt is installed, use it for
 #'   secondary searches for genes not matched in the Oryzabase data.
 #' @return Returns a list of two \code{data.frame}s, matched for MSU loci that 
 #'   were successfully matched to refSeq IDs and notMatched for ones that 
@@ -23,7 +23,6 @@
 #'   refseqRnaNucleotideAccessionNo (refSeq mRNA ID), rapLocus (Rap-DB ID) and 
 #'   symbols (CSGNL recommended gene symbol(s)).
 #'   
-#' @import data.table
 #' @export
 #' @examples 
 #' LocToRefSeq(c('LOC_Os01g03340', 'LOC_Os01g09410', 'LOC_Os01g17396', 'LOC_Os01g18800', 'LOC_Os01g44069', 'LOC_Os01g45470', 'LOC_Os01g53880', 'LOC_Os01g64730', 'LOC_Os01g71820', 'LOC_Os02g07110', 'LOC_Os02g26680', 'LOC_Os02g26700', 'LOC_Os02g41904', 'LOC_Os02g42880', 'LOC_Os02g44630', 'LOC_Os03g15530', 'LOC_Os03g22270', 'LOC_Os03g61160', 'LOC_Os04g58710', 'LOC_Os06g06750', 'LOC_Os07g32170', 'LOC_Os08g24930', 'LOC_Os08g31980', 'LOC_Os09g07154', 'LOC_Os09g25330', 'LOC_Os09g31438', 'LOC_Os10g07229', 'LOC_Os10g18870', 'LOC_Os10g26340', 'LOC_Os10g42210', 'LOC_Os10g42220'))
