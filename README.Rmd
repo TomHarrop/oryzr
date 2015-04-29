@@ -27,5 +27,5 @@ This R package is for converting between different types of gene identifiers for
 #### Installation
 
 * Make sure you have [Hadley Wickham's `devtools`](https://github.com/hadley/devtools) installed: `install.packages("devtools")`
-* Install `oryzr` from GitHub: `devtools::install_github('Tom14-/oryzr')`
+* Install `oryzr` from GitHub: `devtools::install_github("Tom14-/oryzr")`
 

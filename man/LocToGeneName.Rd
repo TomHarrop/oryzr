@@ -10,20 +10,20 @@ LocToGeneName(LOCs, plotLabels = TRUE, shortLabels = FALSE,
 \arguments{
 \item{LOCs}{Character vector of MSU locus identifiers}
 
-\item{plotLabels}{Boolean (default TRUE). Should labels for plotting be
+\item{plotLabels}{Boolean (default \code{TRUE}). Should labels for plotting be
 generated? Labels will be of the format LOC_ID\\nGene name(s) unless
 \code{shortLabels == TRUE}.}
 
-\item{shortLabels}{Boolean (default FALSE). Return labels in format
+\item{shortLabels}{Boolean (default \code{FALSE}). Return labels in format
 LOC_ID\\nGene symbols(s). Has no effect if \code{plotLabels == FALSE}.}
 
-\item{simpleLabels}{Boolean (default FALSE). Return \emph{really} short
-labels (CSGNL symbol or MSU ID \strong{only}). Useful \emph{e.g.} in
+\item{simpleLabels}{Boolean (default \code{FALSE}). Return \emph{really} short
+labels (CSGNL symbol or MSU ID \strong{only}). Useful \emph{e.g}. in
 heatmaps with lots of genes. Has no effect if \code{plotLabels == FALSE}
 and is overriden by \code{shortLabels == TRUE}.}
 }
 \value{
-Returns a data.frame with columns RapID (RAP-DB gene identifier),
+Returns a \code{data.frame} with columns RapID (RAP-DB gene identifier),
   symbols (CSGNL recommended symbols) and names (CSGNL recommended names) and
   optionally labels for plotting.
 }

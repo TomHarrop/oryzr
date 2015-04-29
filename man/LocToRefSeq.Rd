@@ -9,7 +9,7 @@ LocToRefSeq(LOCs, useBiomart = TRUE)
 \arguments{
 \item{LOCs}{Character vector of MSU locus identifiers}
 
-\item{useBiomart}{Boolean (default TRUE). If biomaRt is installed, use it for
+\item{useBiomart}{Boolean (default \code{TRUE}). If biomaRt is installed, use it for
 secondary searches for genes not matched in the Oryzabase data.}
 }
 \value{
