@@ -37,13 +37,14 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
     if (requireNamespace("OpenRepGrid", quietly = TRUE)) {
         # sapply over LOCs with grep, unlist results and select columns to
         # output
-        matchedRecords <- RapMsuRefSeq[unique(unlist(OpenRepGrid::sapply_pb(LOCs, 
-            function(x) grep(x, RapMsuRefSeq$tigrId, ignore.case = TRUE)))), 
-            ][, list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)]
+        matchedRecords <- data.table::data.table(RapMsuRefSeq)[
+          unique(unlist(OpenRepGrid::sapply_pb(LOCs, function(x) 
+            grep(x, RapMsuRefSeq$tigrId, ignore.case = TRUE)))),
+            ][,list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)]
     } else {
         # sapply over LOCs with grep, unlist results and select columns to
         # output
-        matchedRecords <- RapMsuRefSeq[unique(unlist(sapply(LOCs, function(x) grep(x, 
+        matchedRecords <- data.table::data.table(RapMsuRefSeq)[unique(unlist(sapply(LOCs, function(x) grep(x, 
             RapMsuRefSeq$tigrId, ignore.case = TRUE)))), ][, list(rapLocus, 
             tigrId, refseqRnaNucleotideAccessionNo)]
     }
@@ -67,7 +68,7 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
                 ]
         }
         # remove trailng Tx numbers, remove unmatched locs
-        rematchedLocs <- data.table(rematchedLocs)
+        rematchedLocs <- data.table::data.table(rematchedLocs)
         rematchedLocs <- rematchedLocs[, `:=`(tigrId, gsub("\\..*$", "", 
             MSU_ID))][, `:=`(rapLocus, toupper(Rap_ID))][, `:=`(Rap_ID, 
             NULL)][, `:=`(MSU_ID, NULL)][!rapLocus == "NONE"]
