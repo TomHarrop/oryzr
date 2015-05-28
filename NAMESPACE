@@ -2,3 +2,4 @@
 
 export(LocToGeneName)
 export(LocToRefSeq)
+import(data.table)
