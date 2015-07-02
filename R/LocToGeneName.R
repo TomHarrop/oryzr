@@ -10,18 +10,18 @@
 #' \href{http://www.shigen.nig.ac.jp/rice/oryzabase/download/gene}{Oryzabase}.
 #' 
 #' @param LOCs Character vector of MSU locus identifiers
-#' @param plotLabels Boolean (default \code{TRUE}). Should labels for plotting be 
-#'   generated? Labels will be of the format LOC_ID\\nGene name(s) unless 
+#' @param plotLabels Boolean (default \code{TRUE}). Should labels for plotting
+#'   be generated? Labels will be of the format LOC_ID\\nGene name(s) unless 
 #'   \code{shortLabels == TRUE}.
 #' @param shortLabels Boolean (default \code{FALSE}). Return labels in format 
 #'   LOC_ID\\nGene symbols(s). Has no effect if \code{plotLabels == FALSE}.
-#' @param simpleLabels Boolean (default \code{FALSE}). Return \emph{really} short 
-#'   labels (CSGNL symbol or MSU ID \strong{only}). Useful \emph{e.g}. in 
-#'   heatmaps with lots of genes. Has no effect if \code{plotLabels == FALSE}
+#' @param simpleLabels Boolean (default \code{FALSE}). Return \emph{really}
+#'   short labels (CSGNL symbol or MSU ID \strong{only}). Useful \emph{e.g}. in 
+#'   heatmaps with lots of genes. Has no effect if \code{plotLabels == FALSE} 
 #'   and is overriden by \code{shortLabels == TRUE}.
-#' @return Returns a \code{data.frame} with columns RapID (RAP-DB gene identifier), 
-#'   symbols (CSGNL recommended symbols) and names (CSGNL recommended names) and
-#'   optionally labels for plotting.
+#' @return Returns a \code{data.frame} with MSU IDs as \code{rownames}, and
+#'   columns RapID (RAP-DB gene identifier), symbols (CSGNL recommended symbols)
+#'   and names (CSGNL recommended names) and optionally labels for plotting.
 #'   
 #' @export
 #' @examples 

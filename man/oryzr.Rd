@@ -15,6 +15,7 @@ mRNA).
   identifiers to CSGNL gene names and symbols and generate a label for
   plotting if requested. \item \code{\link{LocToRefSeq}}: Convert MSU
   identifiers to Rap-DB identifiers and map them to RefSeq mRNA identifiers.
-  }
+  \item \code{\link{SearchByGeneSymbol}}: Search Rap-DB and oryzabase
+  information by gene symbol and return identifiers for potential matches.}
 }
 
