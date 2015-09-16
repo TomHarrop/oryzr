@@ -52,12 +52,17 @@ data.table::setnames(GeneListByID, old = "RAP.ID", new = "RAP_id")
 data.table::setkey(GeneListByID, "RAP_id")
 
 # tidy data: one line per symbol
-splitSymbol <- function(symbols) {
+# remove symbols that == gene name here
+splitSymbol <- function(symbols, CGSNL.Gene.Symbol) {
   splitSymbols <- unlist(strsplit(symbols, ",|;|/"))
   # remove whitespace
   splitSymbols <- sapply(splitSymbols, gsub, pattern = "^[[:space:]]+|[[:space:]]+$", replacement = "")
   # remove "Os"
   splitSymbols <- sapply(splitSymbols, gsub, pattern = "^Os[[:space:]]*", replacement = "")
+  # remove symbols that are similar to CGSNL.Gene.Symbol
+  splitSymbols <- splitSymbols[
+    !toupper(gsub("[^[:alnum:]]", "", splitSymbols)) %in%
+      toupper(gsub("[^[:alnum:]]", "", CGSNL.Gene.Symbol))]
   # small variations in formatting
   if(length(splitSymbols) > 1) {
     alnum <- sapply(splitSymbols, gsub, pattern = "[^[:alnum:]]", replacement = "")
@@ -80,7 +85,7 @@ splitName <- function(geneNames) {
 }
   
 symbol_synonyms.table <- GeneListByID[, .(
-  symbol_synonyms = splitSymbol(Gene.symbol.synonym.s.)), by = RAP_id]
+  symbol_synonyms = splitSymbol(Gene.symbol.synonym.s., CGSNL.Gene.Symbol)), by = RAP_id]
 name_synonyms.table <- GeneListByID[, .(
   name_synonyms = splitName(Gene.name.synonym.s.)), by = RAP_id]
 synonyms <- merge(symbol_synonyms.table, name_synonyms.table, allow.cartesian = TRUE)
@@ -89,25 +94,11 @@ synonyms <- merge(symbol_synonyms.table, name_synonyms.table, allow.cartesian = 
 GeneListWithSynonyms <- synonyms[GeneListByID[, .(RAP_id, CGSNL.Gene.Symbol,
                                                   CGSNL.Gene.Name, Gramene.ID)],
                                  allow.cartesian = TRUE]
-
-# detect duplicate synonyms
-isDuplicateSynonym <- function(RAP_id, symbol_synonym) {
-  gs <- GeneListWithSynonyms[RAP_id, unique(CGSNL.Gene.Symbol)]
-  return(toupper(gsub("[^[:alnum:]]", "", symbol_synonym)) %in%
-  toupper(gsub("[^[:alnum:]]", "", gs)))
-}
-
-GeneListWithSynonyms[, isDuplicateSynonym := isDuplicateSynonym(RAP_id, symbol_synonyms),
-                     by = .(RAP_id, symbol_synonyms)]
-GeneListWithSynonyms[isDuplicateSynonym == TRUE, symbol_synonyms := NA]
-GeneListWithSynonyms[, isDuplicateSynonym := NULL]
 data.table::setcolorder(GeneListWithSynonyms,
                         c('RAP_id', 'CGSNL.Gene.Symbol', 'symbol_synonyms',
                           'CGSNL.Gene.Name', 'name_synonyms', 'Gramene.ID'))
 data.table::setkey(GeneListWithSynonyms, NULL)
 GeneListWithSynonyms <- unique(GeneListWithSynonyms)
-#GeneListWithSynonyms <- GeneListWithSynonyms[!(is.na(symbol_synonyms) &
-#                                                 !is.na(CGSNL.Gene.Symbol))]
 data.table::setkey(GeneListWithSynonyms, 'RAP_id')
 
 # timestamp

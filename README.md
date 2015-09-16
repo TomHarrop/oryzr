@@ -14,5 +14,5 @@ This R package is for converting between different types of gene identifiers for
 
 #### Installation
 
--   Make sure you have [`devtools`](https://github.com/hadley/devtools) installed: `install.packages("devtools")`
--   Install `oryzr` from GitHub: `devtools::install_github("Tom14-/oryzr")`
+-   Requires [`devtools`](https://github.com/hadley/devtools): `install.packages("devtools")`
+-   Install `oryzr` from GitHub: `devtools::install_github("TomHarrop/oryzr")`
