@@ -4,28 +4,26 @@
 \alias{LocToGeneName}
 \title{LocToGeneName}
 \usage{
-LocToGeneName(LOCs, plotLabels = TRUE, shortLabels = FALSE,
-  simpleLabels = FALSE)
+LocToGeneName(LOCs, shortLabels = FALSE, return.synonyms = FALSE)
 }
 \arguments{
 \item{LOCs}{Character vector of MSU locus identifiers}
 
-\item{plotLabels}{Boolean (default \code{TRUE}). Should labels for plotting
-be generated? Labels will be of the format LOC_ID\\nGene name(s) unless
-\code{shortLabels == TRUE}.}
+\item{shortLabels}{Boolean (default \code{FALSE}). Tries to return a sensible
+label \emph{e.g.} for plotting: either the LOC_ID for unnamed genes or the
+name for named genes, with synonyms in brackets.}
 
-\item{shortLabels}{Boolean (default \code{FALSE}). Return labels in format
-LOC_ID\\nGene symbols(s). Has no effect if \code{plotLabels == FALSE}.}
-
-\item{simpleLabels}{Boolean (default \code{FALSE}). Return \emph{really}
-short labels (CSGNL symbol or MSU ID \strong{only}). Useful \emph{e.g}. in
-heatmaps with lots of genes. Has no effect if \code{plotLabels == FALSE}
-and is overriden by \code{shortLabels == TRUE}.}
+\item{return.synonyms}{Boolean (default \code{FALSE}). Return a \strong{long}
+data.table including a column with the synonyms for each gene.}
 }
 \value{
-Returns a \code{data.frame} with MSU IDs as \code{rownames}, and
-  columns RapID (RAP-DB gene identifier), symbols (CSGNL recommended symbols)
-  and names (CSGNL recommended names) and optionally labels for plotting.
+If \code{return.synonyms} is \code{FALSE}, returns a
+  \code{data.frame} with MSU IDs as \code{rownames}, and columns RapID
+  (RAP-DB gene identifier), symbols (CSGNL recommended symbol) and names
+  (CSGNL recommended name) and optionally labels for plotting. If
+  \code{return.synonyms} is \code{TRUE}, returns a \strong{long
+  \code{data.table}} additionally containing columns MsuID, symbol_synonyms
+  and name_synonyms.
 }
 \description{
 Convert MSU identifiers to CSGNL gene names and symbols and generate a label
@@ -40,6 +38,6 @@ OryzabaseGeneListEn database, downloaded from
 }
 \examples{
 LocToGeneName(c('LOC_Os01g03340', 'LOC_Os01g09410', 'LOC_Os01g17396', 'LOC_Os01g18800', 'LOC_Os01g44069', 'LOC_Os01g45470', 'LOC_Os01g53880', 'LOC_Os01g64730', 'LOC_Os01g71820', 'LOC_Os02g07110', 'LOC_Os02g26680', 'LOC_Os02g26700', 'LOC_Os02g41904', 'LOC_Os02g42880', 'LOC_Os02g44630', 'LOC_Os03g15530', 'LOC_Os03g22270', 'LOC_Os03g61160', 'LOC_Os04g58710', 'LOC_Os06g06750', 'LOC_Os07g32170', 'LOC_Os08g24930', 'LOC_Os08g31980', 'LOC_Os09g07154', 'LOC_Os09g25330', 'LOC_Os09g31438', 'LOC_Os10g07229', 'LOC_Os10g18870', 'LOC_Os10g26340', 'LOC_Os10g42210', 'LOC_Os10g42220'))
-LocToGeneName(c('LOC_Os03g03034', 'LOC_Os06g36560', 'LOC_Os01g50910'))
+LocToGeneName(c('LOC_Os03g03034', 'LOC_Os06g36560', 'LOC_Os01g50910', "LOC_Os03g60430"))
 }
 
