@@ -8,7 +8,16 @@ download.file("http://rapdb.dna.affrc.go.jp/download/archive/RAP-MSU.txt.gz",
     temp)
 RAPMSU <- data.table::as.data.table(read.delim(temp, sep = "\t", header = FALSE,
                                                stringsAsFactors = FALSE,
-                                               col.names = c("Rap_ID", "MSU_ID")))
+                                               col.names = c("Rap_ID", "MSU_Transcripts_dirty")))
+# tidy MSU column
+splitDirtyTransctripts <- function(ids) {
+  splitIds <- unlist(strsplit(ids, ",", fixed = TRUE))
+  unique(gsub("\\.[[:digit:]]+$", "", splitIds))
+}
+RAPMSU <- RAPMSU[, .(MSU_ID = splitDirtyTransctripts(MSU_Transcripts_dirty)),
+                 by = Rap_ID]
+setkey(RAPMSU, MSU_ID)
+
 # timestamp
 attr(RAPMSU, "dateRetrieved") <- date()
 
@@ -44,7 +53,7 @@ data.table::setkey(GeneListByID, "RAP_id")
 
 # tidy data: one line per symbol
 splitSymbol <- function(symbols) {
-  splitSymbols <- unlist(strsplit(symbols, ","))
+  splitSymbols <- unlist(strsplit(symbols, ",|;|/"))
   # remove whitespace
   splitSymbols <- sapply(splitSymbols, gsub, pattern = "^[[:space:]]+|[[:space:]]+$", replacement = "")
   # remove "Os"
@@ -58,7 +67,7 @@ splitSymbol <- function(symbols) {
   } else {return(splitSymbols)}
 }
 splitName <- function(geneNames) {
-  splitNames <- unlist(strsplit(geneNames, ",|;"))
+  splitNames <- unlist(strsplit(geneNames, ",|;|/"))
   # remove whitespace
   splitNames <- sapply(splitNames, gsub, pattern = "^[[:space:]]+|[[:space:]]+$", replacement = "")
   # small variations in formatting
@@ -83,22 +92,23 @@ GeneListWithSynonyms <- synonyms[GeneListByID[, .(RAP_id, CGSNL.Gene.Symbol,
 
 # detect duplicate synonyms
 isDuplicateSynonym <- function(RAP_id, symbol_synonym) {
-  if(symbol_synonym %in% GeneListWithSynonyms[
-    RAP_id, CGSNL.Gene.Symbol]) {
-    return(TRUE)
-  } else if (symbol_synonym %in% GeneListWithSynonyms[
-    RAP_id, gsub("[^[:alnum:]]", "", CGSNL.Gene.Name)]) {
-    return(TRUE)
-  } else {return(FALSE)}
+  gs <- GeneListWithSynonyms[RAP_id, unique(CGSNL.Gene.Symbol)]
+  return(toupper(gsub("[^[:alnum:]]", "", symbol_synonym)) %in%
+  toupper(gsub("[^[:alnum:]]", "", gs)))
 }
 
 GeneListWithSynonyms[, isDuplicateSynonym := isDuplicateSynonym(RAP_id, symbol_synonyms),
-                     by = c("RAP_id", "symbol_synonyms")]
-GeneListWithSynonyms <- GeneListWithSynonyms[isDuplicateSynonym == FALSE]
+                     by = .(RAP_id, symbol_synonyms)]
+GeneListWithSynonyms[isDuplicateSynonym == TRUE, symbol_synonyms := NA]
 GeneListWithSynonyms[, isDuplicateSynonym := NULL]
 data.table::setcolorder(GeneListWithSynonyms,
                         c('RAP_id', 'CGSNL.Gene.Symbol', 'symbol_synonyms',
                           'CGSNL.Gene.Name', 'name_synonyms', 'Gramene.ID'))
+data.table::setkey(GeneListWithSynonyms, NULL)
+GeneListWithSynonyms <- unique(GeneListWithSynonyms)
+#GeneListWithSynonyms <- GeneListWithSynonyms[!(is.na(symbol_synonyms) &
+#                                                 !is.na(CGSNL.Gene.Symbol))]
+data.table::setkey(GeneListWithSynonyms, 'RAP_id')
 
 # timestamp
 attr(GeneListWithSynonyms, "dateRetrieved") <- date()

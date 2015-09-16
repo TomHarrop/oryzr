@@ -32,9 +32,20 @@
 #' LocToGeneName(c('LOC_Os03g03034', 'LOC_Os06g36560', 'LOC_Os01g50910', "LOC_Os03g60430"))
 
 LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
-  LocToRap <- data.table(MsuID = unique(LOCs))
-  LocToRap[, RapID := unique(RAPMSU$Rap_ID[which(grepl(toupper(MsuID), toupper(RAPMSU$MSU_ID), fixed = TRUE))]),
-           by = MsuID]
+  LocToRap <- data.table(MsuID = unique(LOCs), key = "MsuID")
+  LocToRap <- RAPMSU[LocToRap, .(
+    MsuID = MSU_ID,
+    RapID = Rap_ID
+  )]
+  
+  #LocToRap[, RapID := RAPMSU[grepl(toupper(MsuID), toupper(MSU_ID)), Rap_ID],
+   #        by = MsuID]
+  
+  #   LocToRap[, RapID :=
+  #              unique(RAPMSU$Rap_ID[
+  #                which(grepl(toupper(MsuID), toupper(RAPMSU$MSU_ID), fixed = TRUE))
+  #                ]),
+  #            by = MsuID]
   LocToRap[RapID == "None", RapID := NA]
   setkey(LocToRap, "RapID")
   LocToLabels <- GeneListWithSynonyms[LocToRap, .(
