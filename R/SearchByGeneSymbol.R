@@ -12,11 +12,19 @@
 #' \code{data.table} returned by \code{SearchByGeneSymbol} must be manually 
 #' verified.
 #' 
-#' @param GeneSymbols Character vector of gene symbols
-#'   
-#' @return Returns a \code{data.frame} with MSU IDs as \code{rownames}, and
+#' @param \code{GeneSymbols} Character vector of gene symbols
+#' @param shortLabels Boolean (default \code{FALSE}). Tries to return a sensible
+#'   label \emph{e.g.} for plotting. See help for \code{LocToRefSeq} for more
+#'   information.
+#' @param return.synonyms Boolean (default \code{FALSE}). Return a \strong{long}
+#'   data.table including a column with the synonyms for each gene. See help for
+#'   \code{LocToRefSeq} for more information.
+#' 
+#' @return Returns a \code{data.frame} with MSU IDs as \code{rownames}, and 
 #'   columns RapID (RAP-DB gene identifier), symbols (CSGNL recommended symbols)
-#'   and names (CSGNL recommended names).
+#'   and names (CSGNL recommended names), unless either of \code{shortLabels} or
+#'   \code{return.synonyms} is \code{TRUE}. See help for \code{LocToRefSeq} for
+#'   more information.
 #'   
 #' @import data.table
 #' @export
@@ -25,27 +33,21 @@
 #' SearchByGeneSymbol(c('FON1'))
 #' SearchByGeneSymbol(c('SPL7'))
 
-SearchByGeneSymbol <- function(GeneSymbols) {
+SearchByGeneSymbol <- function(GeneSymbols, shortLabels = FALSE, return.synonyms = FALSE) {
   # Get RapDB ID from OryzabaseGeneListEn
-  symbolMatches <- as.data.table(do.call(
-    rbind,
-    lapply(GeneSymbols, function(x)
-      GeneListByID.frame[grep(x, GeneListByID.frame$symbol,
-                              ignore.case = TRUE),]
-    )))
+  getMatch <- function(GeneSymbol) {
+    GeneListWithSynonyms[grepl(toupper(GeneSymbol),
+                               toupper(CGSNL.Gene.Symbol)) |
+                           grepl(toupper(GeneSymbol),
+                                 toupper(symbol_synonyms))]
+  }
+  symbolMatches <- do.call(rbind, lapply(GeneSymbols, getMatch))
   # Match RapDB ID to MSU ID
-  RapMsuMatches <- as.data.table(do.call(
-    rbind,
-    lapply(unique(symbolMatches$RAP_id), function(x)
-      RAPMSU[grep(x, RAPMSU$Rap_ID, ignore.case = TRUE),]
-    )))
-  # Trim transcript numbers
-  RapMsuMatches[,MSU_ID := gsub("\\..*", "", MSU_ID)]
-  
+  rapMsuMatches <- symbolMatches[, RAPMSU[Rap_ID == unique(RAP_id), MSU_ID]]
   # Return gene information
   return(
-  oryzr::LocToGeneName(RapMsuMatches$MSU_ID, plotLabels = FALSE)
+    oryzr::LocToGeneName(rapMsuMatches, shortLabels = shortLabels,
+                         return.synonyms = return.synonyms)
   )
-  
 }
 

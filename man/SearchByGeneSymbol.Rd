@@ -4,15 +4,26 @@
 \alias{SearchByGeneSymbol}
 \title{SearchByGeneSymbol}
 \usage{
-SearchByGeneSymbol(GeneSymbols)
+SearchByGeneSymbol(GeneSymbols, shortLabels = FALSE,
+  return.synonyms = FALSE)
 }
 \arguments{
-\item{GeneSymbols}{Character vector of gene symbols}
+\item{shortLabels}{Boolean (default \code{FALSE}). Tries to return a sensible
+label \emph{e.g.} for plotting. See help for \code{LocToRefSeq} for more
+information.}
+
+\item{return.synonyms}{Boolean (default \code{FALSE}). Return a \strong{long}
+  data.table including a column with the synonyms for each gene. See help for
+  \code{LocToRefSeq} for more information.}
+
+\item{\code{GeneSymbols}}{Character vector of gene symbols}
 }
 \value{
 Returns a \code{data.frame} with MSU IDs as \code{rownames}, and
   columns RapID (RAP-DB gene identifier), symbols (CSGNL recommended symbols)
-  and names (CSGNL recommended names).
+  and names (CSGNL recommended names), unless either of \code{shortLabels} or
+  \code{return.synonyms} is \code{TRUE}. See help for \code{LocToRefSeq} for
+  more information.
 }
 \description{
 Search Rap-DB and oryzabase information by gene symbol and return identifiers
