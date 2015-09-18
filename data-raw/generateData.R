@@ -54,11 +54,14 @@ data.table::setkey(GeneListByID, "RAP_id")
 # tidy data: one line per symbol
 # remove symbols that == gene name here
 splitSymbol <- function(symbols, CGSNL.Gene.Symbol) {
-  splitSymbols <- unlist(strsplit(symbols, ",|;|/"))
+  splitSymbols <- unlist(strsplit(symbols, ",|;|/|[[:space:]]|\\(|\\)"))
+  #splitSymbols <- unlist(strsplit(symbols, "[^[:alnum:]]"))
   # remove whitespace
   splitSymbols <- sapply(splitSymbols, gsub, pattern = "^[[:space:]]+|[[:space:]]+$", replacement = "")
   # remove "Os"
   splitSymbols <- sapply(splitSymbols, gsub, pattern = "^Os[[:space:]]*", replacement = "")
+  # remove blanks
+  splitSymbols <- splitSymbols[sapply(splitSymbols, nchar) != 0]
   # remove symbols that are similar to CGSNL.Gene.Symbol
   splitSymbols <- splitSymbols[
     !toupper(gsub("[^[:alnum:]]", "", splitSymbols)) %in%
