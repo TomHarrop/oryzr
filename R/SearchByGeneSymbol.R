@@ -43,11 +43,10 @@ SearchByGeneSymbol <- function(GeneSymbols, shortLabels = FALSE, return.synonyms
   }
   symbolMatches <- do.call(rbind, lapply(GeneSymbols, getMatch))
   # Match RapDB ID to MSU ID
-  rapMsuMatches <- symbolMatches[, RAPMSU[Rap_ID == unique(RAP_id), MSU_ID]]
+  rapMsuMatches <- symbolMatches[, RAPMSU[Rap_ID %in% unique(RAP_id), MSU_ID]]
   # Return gene information
   return(
     oryzr::LocToGeneName(rapMsuMatches, shortLabels = shortLabels,
                          return.synonyms = return.synonyms)
   )
 }
-
