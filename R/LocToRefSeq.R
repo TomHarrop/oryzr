@@ -36,47 +36,23 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
   # search RapMsuRefSeq by LOC
   message(paste(dateF(), "Searching Oryzabase database for", length(LOCs), 
                 "record(s)"))
-  # data.table search
-  if (requireNamespace("OpenRepGrid", quietly = TRUE)) {
-    # sapply over LOCs with grep, unlist results and select columns to
-    # output
-    matchedRecords <- RapMsuRefSeq[
-      unique(unlist(OpenRepGrid::sapply_pb(LOCs, function(x)
-        grep(x,RapMsuRefSeq$tigrId, ignore.case = TRUE)))),
-      ][,
-        list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)
-        ]
-  } else {
-    # sapply over LOCs with grep, unlist results and select columns to
-    # output
-    matchedRecords <- RapMsuRefSeq[
-      unique(unlist(sapply(LOCs, function(x)
-        grep(x,RapMsuRefSeq$tigrId, ignore.case = TRUE)))),
-      ][,
-        list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)
-        ]
-  }
+  # fast data.table search: sapply over LOCs with grep, unlist results and
+  # select columns to output
+  matchedRecords <- RapMsuRefSeq[
+    unique(unlist(sapply(toupper(LOCs), grep, x = toupper(tigrId), fixed = TRUE))),
+    list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)]
   # remove trailing transcript numbers from tigrId and refSeq ID
   matchedRecords[, `:=`(tigrId, gsub("\\..*$", "", tigrId))][, `:=`(refseqRnaNucleotideAccessionNo, 
                                                                     gsub("\\..*$", "", refseqRnaNucleotideAccessionNo))]
   data.table::setkey(matchedRecords, tigrId, rapLocus)
   
   # search again in RAPMSU for unmatched LOC IDs
-  unmatchedLocs <- matchedRecords[rapLocus == ""]$tigrId
+  unmatchedLocs <- matchedRecords[rapLocus == "", tigrId]
   if (length(unmatchedLocs) > 0) {
     message(paste(dateF(), "Searching RAP-DB ID database for", length(unmatchedLocs), 
                   "gene(s) not matched in Oryzabase"))
-    if (requireNamespace("OpenRepGrid", quietly = TRUE)) {
-      rematchedLocs <- RAPMSU[unique(unlist(OpenRepGrid::sapply_pb(unmatchedLocs, 
-                                                                   function(x) grep(x, RAPMSU$MSU_ID, ignore.case = TRUE)))), 
-                              ]
-    } else {
-      rematchedLocs <- RAPMSU[unique(unlist(sapply(unmatchedLocs, 
-                                                   function(x) grep(x, RAPMSU$MSU_ID, ignore.case = TRUE)))), 
-                              ]
-    }
+    rematchedLocs <- RAPMSU[unmatchedLocs]
     # remove trailng Tx numbers, remove unmatched locs
-    rematchedLocs <- data.table::data.table(rematchedLocs)
     rematchedLocs <- rematchedLocs[, `:=`(tigrId, gsub("\\..*$", "", 
                                                        MSU_ID))][, `:=`(rapLocus, toupper(Rap_ID))][, `:=`(Rap_ID, 
                                                                                                            NULL)][, `:=`(MSU_ID, NULL)][!rapLocus == "NONE"]
