@@ -19,7 +19,7 @@ RAPMSU <- RAPMSU[, .(MSU_ID = splitDirtyTransctripts(MSU_Transcripts_dirty)),
 setkey(RAPMSU, MSU_ID)
 
 # timestamp
-attr(RAPMSU, "dateRetrieved") <- date()
+attr(RAPMSU, "dateRetrieved") <- Sys.time()
 
 # GeneListById ----------------------------------------
 
@@ -105,7 +105,7 @@ GeneListWithSynonyms <- unique(GeneListWithSynonyms)
 data.table::setkey(GeneListWithSynonyms, 'RAP_id')
 
 # timestamp
-attr(GeneListWithSynonyms, "dateRetrieved") <- date()
+attr(GeneListWithSynonyms, "dateRetrieved") <- Sys.time()
 
 # RapMsuRefSeq ----------------------------------------
 
@@ -119,7 +119,7 @@ RapMsuRefSeq <- data.table::data.table(read.table(unzip(temp, unzip(temp,
 data.table::setkey(RapMsuRefSeq, tigrId)
 
 # timestamp
-attr(RapMsuRefSeq, "dateRetrieved") <- date()
+attr(RapMsuRefSeq, "dateRetrieved") <- Sys.time()
 
 # Save data ----------------------------------------
 
