@@ -6,9 +6,9 @@ library(data.table)
 temp <- tempfile()
 download.file("http://rapdb.dna.affrc.go.jp/download/archive/RAP-MSU.txt.gz", 
     temp)
-RAPMSU <- data.table::as.data.table(read.delim(temp, sep = "\t", header = FALSE,
-                                               stringsAsFactors = FALSE,
-                                               col.names = c("Rap_ID", "MSU_Transcripts_dirty")))
+RAPMSU <- data.table::as.data.table(
+  read.delim(temp, sep = "\t", header = FALSE, stringsAsFactors = FALSE,
+             col.names = c("Rap_ID", "MSU_Transcripts_dirty")))
 # tidy MSU column
 splitDirtyTransctripts <- function(ids) {
   splitIds <- unlist(strsplit(ids, ",", fixed = TRUE))
@@ -57,9 +57,12 @@ splitSymbol <- function(symbols, CGSNL.Gene.Symbol) {
   splitSymbols <- unlist(strsplit(symbols, ",|;|/|[[:space:]]|\\(|\\)"))
   #splitSymbols <- unlist(strsplit(symbols, "[^[:alnum:]]"))
   # remove whitespace
-  splitSymbols <- sapply(splitSymbols, gsub, pattern = "^[[:space:]]+|[[:space:]]+$", replacement = "")
+  splitSymbols <- sapply(splitSymbols, gsub,
+                         pattern = "^[[:space:]]+|[[:space:]]+$",
+                         replacement = "")
   # remove "Os"
-  splitSymbols <- sapply(splitSymbols, gsub, pattern = "^Os[[:space:]]*", replacement = "")
+  splitSymbols <- sapply(splitSymbols, gsub, pattern = "^Os[[:space:]]*",
+                         replacement = "")
   # remove blanks
   splitSymbols <- splitSymbols[sapply(splitSymbols, nchar) != 0]
   # remove symbols that are similar to CGSNL.Gene.Symbol
@@ -68,7 +71,8 @@ splitSymbol <- function(symbols, CGSNL.Gene.Symbol) {
       toupper(gsub("[^[:alnum:]]", "", CGSNL.Gene.Symbol))]
   # small variations in formatting
   if(length(splitSymbols) > 1) {
-    alnum <- sapply(splitSymbols, gsub, pattern = "[^[:alnum:]]", replacement = "")
+    alnum <- sapply(splitSymbols, gsub, pattern = "[^[:alnum:]]",
+                    replacement = "")
   keep <- sapply(2:length(alnum), function(i)
     !(toupper(alnum[i]) %in% toupper(alnum[1:(i-1)])))
   return(splitSymbols[c(TRUE, keep)])
@@ -77,7 +81,9 @@ splitSymbol <- function(symbols, CGSNL.Gene.Symbol) {
 splitName <- function(geneNames) {
   splitNames <- unlist(strsplit(geneNames, ",|;|/"))
   # remove whitespace
-  splitNames <- sapply(splitNames, gsub, pattern = "^[[:space:]]+|[[:space:]]+$", replacement = "")
+  splitNames <- sapply(splitNames, gsub,
+                       pattern = "^[[:space:]]+|[[:space:]]+$",
+                       replacement = "")
   # small variations in formatting
   if(length(splitNames) > 1) {
   alnum <- sapply(splitNames, gsub, pattern = "[^[:alnum:]]", replacement = "")
@@ -88,10 +94,12 @@ splitName <- function(geneNames) {
 }
   
 symbol_synonyms.table <- GeneListByID[, .(
-  symbol_synonyms = splitSymbol(Gene.symbol.synonym.s., CGSNL.Gene.Symbol)), by = RAP_id]
+  symbol_synonyms = splitSymbol(Gene.symbol.synonym.s., CGSNL.Gene.Symbol)),
+  by = RAP_id]
 name_synonyms.table <- GeneListByID[, .(
   name_synonyms = splitName(Gene.name.synonym.s.)), by = RAP_id]
-synonyms <- merge(symbol_synonyms.table, name_synonyms.table, allow.cartesian = TRUE)
+synonyms <- merge(symbol_synonyms.table, name_synonyms.table, 
+                  allow.cartesian = TRUE)
 
 # combine symbols with other information
 GeneListWithSynonyms <- synonyms[GeneListByID[, .(RAP_id, CGSNL.Gene.Symbol,
@@ -106,6 +114,20 @@ data.table::setkey(GeneListWithSynonyms, 'RAP_id')
 
 # timestamp
 attr(GeneListWithSynonyms, "dateRetrieved") <- Sys.time()
+
+# TIGR annotations ----------------------------------------
+temp <- tempfile()
+download.file("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.locus_brief_info.7.0",
+              method = "auto", temp)
+msu.annotation <- data.table(read.delim(file = temp, sep = "\t",header = TRUE,
+                      fill = TRUE), key = 'locus')  
+# get 1 annotation per LOC ID
+msu.annotation.collapsed <- unique(msu.annotation[, .(
+  annotation = paste(unique(annotation), collapse = ", ")),
+  by = locus])
+
+# timestamp
+attr(msu.annotation.collapsed, "dateRetrieved") <- Sys.time()
 
 # RapMsuRefSeq ----------------------------------------
 
@@ -123,5 +145,6 @@ attr(RapMsuRefSeq, "dateRetrieved") <- Sys.time()
 
 # Save data ----------------------------------------
 
-devtools::use_data(RAPMSU, GeneListWithSynonyms, RapMsuRefSeq, internal = TRUE, 
+devtools::use_data(RAPMSU, GeneListWithSynonyms, RapMsuRefSeq,
+                   msu.annotation.collapsed, internal = TRUE, 
     overwrite = TRUE) 

@@ -17,11 +17,11 @@
 #'   data.table including a column with the synonyms for each gene.
 #' @return If \code{return.synonyms} is \code{FALSE}, returns a 
 #'   \code{data.frame} with MSU IDs as \code{rownames}, and columns RapID 
-#'   (RAP-DB gene identifier), symbols (CSGNL recommended symbol) and names 
-#'   (CSGNL recommended name) and optionally labels for plotting. If 
-#'   \code{return.synonyms} is \code{TRUE}, returns a \strong{long 
-#'   \code{data.table}} additionally containing columns MsuID, symbol_synonyms
-#'   and name_synonyms.
+#'   (RAP-DB gene identifier), symbols (CSGNL recommended symbol), names (CSGNL
+#'   recommended name) and MsuAnnotation (TIGR annotations) and optionally
+#'   labels for plotting. If \code{return.synonyms} is \code{TRUE}, returns a
+#'   \strong{long \code{data.table}} additionally containing columns MsuID,
+#'   symbol_synonyms and name_synonyms.
 #'   
 #' @export
 #' 
@@ -33,21 +33,15 @@
 
 LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   LocToRap <- data.table(MsuID = unique(LOCs), key = "MsuID")
+  # get RAP IDs
   LocToRap <- RAPMSU[LocToRap, .(
     MsuID = MSU_ID,
     RapID = Rap_ID
   )]
-  
-  #LocToRap[, RapID := RAPMSU[grepl(toupper(MsuID), toupper(MSU_ID)), Rap_ID],
-   #        by = MsuID]
-  
-  #   LocToRap[, RapID :=
-  #              unique(RAPMSU$Rap_ID[
-  #                which(grepl(toupper(MsuID), toupper(RAPMSU$MSU_ID), fixed = TRUE))
-  #                ]),
-  #            by = MsuID]
   LocToRap[RapID == "None", RapID := NA]
   setkey(LocToRap, "RapID")
+  
+  # get labels
   LocToLabels <- GeneListWithSynonyms[LocToRap, .(
     MsuID,
     RapID,
@@ -82,12 +76,21 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   
   setkey(LocToLabels, MsuID)
   
+  # get MSU annotation
+  LocToLabels <- msu.annotation.collapsed[LocToLabels, .(
+    MsuID = locus,
+    MsuAnnotation = annotation,
+    RapID,symbols,names,symbol_synonyms,name_synonyms,labels
+  )]
+  
+  
   # don't return synonyms or labels. In this case return a data.frame.
   if (!shortLabels & !return.synonyms) {
     LocToLabels.frame <- as.data.frame(unique(LocToLabels[,.(MsuID,
                                                              RapID,
                                                              symbols,
-                                                             names)]))
+                                                             names,
+                                                             MsuAnnotation)]))
     rownames(LocToLabels.frame) <- LocToLabels.frame$MsuID
     LocToLabels.frame$MsuID <- NULL
     return(LocToLabels.frame)
@@ -99,6 +102,7 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                                                              RapID,
                                                              symbols,
                                                              names,
+                                                             MsuAnnotation,
                                                              labels)]))
     rownames(LocToLabels.frame) <- LocToLabels.frame$MsuID
     LocToLabels.frame$MsuID <- NULL
@@ -107,18 +111,19 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   
   # don't return short labels, return synonyms
   if (!shortLabels & return.synonyms) {
-    message("Synonyms requested, returning **LONG** data.table")
+    warning("Synonyms requested, returning **LONG** data.table")
     return(LocToLabels[, .(MsuID,
                            RapID,
                            symbols,
                            symbol_synonyms,
                            names,
-                           name_synonyms)])
+                           name_synonyms,
+                           MsuAnnotation)])
   }
   
   # short labels and synonyms
   if (shortLabels & return.synonyms) {
-    message("Synonyms requested, returning **LONG** data.table")
+    warning("Synonyms requested, returning **LONG** data.table")
   }
   # return the whole table
   return(LocToLabels[, .(MsuID,
@@ -127,5 +132,6 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                          symbol_synonyms,
                          names,
                          name_synonyms,
+                         MsuAnnotation,
                          labels)])
 } 
