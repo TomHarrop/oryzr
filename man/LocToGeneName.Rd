@@ -19,10 +19,10 @@ data.table including a column with the synonyms for each gene.}
 \value{
 If \code{return.synonyms} is \code{FALSE}, returns a 
   \code{data.frame} with MSU IDs as \code{rownames}, and columns RapID 
-  (RAP-DB gene identifier), symbols (CSGNL recommended symbol), names (CSGNL
-  recommended name) and MsuAnnotation (TIGR annotations) and optionally
-  labels for plotting. If \code{return.synonyms} is \code{TRUE}, returns a
-  \strong{long \code{data.table}} additionally containing columns MsuID,
+  (RAP-DB gene identifier), symbols (CSGNL recommended symbol), names (CSGNL 
+  recommended name) and MsuAnnotation (TIGR annotations) and optionally 
+  labels for plotting. If \code{return.synonyms} is \code{TRUE}, returns a 
+  \strong{long \code{data.table}} additionally containing columns MsuID, 
   symbol_synonyms and name_synonyms.
 }
 \description{
@@ -39,5 +39,6 @@ OryzabaseGeneListEn database, downloaded from
 \examples{
 LocToGeneName(c('LOC_Os01g03340', 'LOC_Os01g09410', 'LOC_Os01g17396', 'LOC_Os01g18800', 'LOC_Os01g44069', 'LOC_Os01g45470', 'LOC_Os01g53880', 'LOC_Os01g64730', 'LOC_Os01g71820', 'LOC_Os02g07110', 'LOC_Os02g26680', 'LOC_Os02g26700', 'LOC_Os02g41904', 'LOC_Os02g42880', 'LOC_Os02g44630', 'LOC_Os03g15530', 'LOC_Os03g22270', 'LOC_Os03g61160', 'LOC_Os04g58710', 'LOC_Os06g06750', 'LOC_Os07g32170', 'LOC_Os08g24930', 'LOC_Os08g31980', 'LOC_Os09g07154', 'LOC_Os09g25330', 'LOC_Os09g31438', 'LOC_Os10g07229', 'LOC_Os10g18870', 'LOC_Os10g26340', 'LOC_Os10g42210', 'LOC_Os10g42220'))
 LocToGeneName(c('LOC_Os03g03034', 'LOC_Os06g36560', 'LOC_Os01g50910', "LOC_Os03g60430"))
+LocToGeneName(c("LOC_Os01g03840", "LOC_Os01g10110", "LOC_Os01g10504", "LOC_Os01g40630", "LOC_Os01g61480", "LOC_Os01g66030", "LOC_Os01g66290", "LOC_Os02g15950", "LOC_Os02g45770", "LOC_Os02g52340", "LOC_Os03g11600", "LOC_Os03g11614", "LOC_Os03g51690", "LOC_Os03g54170", "LOC_Os03g57240", "LOC_Os03g60430", "LOC_Os04g32510", "LOC_Os04g49150", "LOC_Os04g51000", "LOC_Os05g41760", "LOC_Os06g11330", "LOC_Os06g45460", "LOC_Os06g49840", "LOC_Os06g50340", "LOC_Os07g13170", "LOC_Os07g15770", "LOC_Os07g41370", "LOC_Os07g42410", "LOC_Os07g47330", "LOC_Os08g06480", "LOC_Os08g07740", "LOC_Os08g39890", "LOC_Os08g41950", "LOC_Os09g26999", "LOC_Os09g32948", "LOC_Os10g33780", "LOC_Os11g38270", "LOC_Os12g10540"))
 }
 
