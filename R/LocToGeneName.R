@@ -18,7 +18,10 @@
 #' @return If \code{return.synonyms} is \code{FALSE}, returns a 
 #'   \code{data.frame} with MSU IDs as \code{rownames}, and columns RapID 
 #'   (RAP-DB gene identifier), symbols (CSGNL recommended symbol), names (CSGNL 
-#'   recommended name) and MsuAnnotation (TIGR annotations) and optionally 
+#'   recommended name), MsuAnnotation
+#'   (\href{http://rice.plantbiology.msu.edu/}{TIGR} annotations), OgroObjective
+#'   and OgroRef (manual annotation from 
+#'   \href{http://qtaro.abr.affrc.go.jp/ogro}{OGRO} database) and optionally 
 #'   labels for plotting. If \code{return.synonyms} is \code{TRUE}, returns a 
 #'   \strong{long \code{data.table}} additionally containing columns MsuID, 
 #'   symbol_synonyms and name_synonyms.
@@ -35,9 +38,11 @@
 LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   LocToRap <- data.table(MsuID = unique(LOCs), key = "MsuID")
   # get RAP IDs
-  LocToRap <- RAPMSU[LocToRap, .(
+  LocToRap <- rap.msu.ogro[LocToRap, .(
     MsuID = MSU_ID,
-    RapID = Rap_ID
+    RapID = locus_id,
+    OgroObjective = ogro.objective,
+    OgroRef = ogro.doi
   )]
   LocToRap[RapID == "None", RapID := NA]
   setkey(LocToRap, "RapID")
@@ -49,7 +54,9 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
     symbols = CGSNL.Gene.Symbol,
     names = CGSNL.Gene.Name,
     symbol_synonyms,
-    name_synonyms)]
+    name_synonyms,
+    OgroObjective,
+    OgroRef)]
   # replace blanks with NA
   rmNaDt = function(DT) {
     for (j in seq_len(ncol(DT)))
@@ -81,7 +88,8 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   LocToLabels <- msu.annotation.collapsed[LocToLabels, .(
     MsuID = locus,
     MsuAnnotation = annotation,
-    RapID,symbols,names,symbol_synonyms,name_synonyms,labels
+    RapID,symbols,names,symbol_synonyms,name_synonyms,OgroObjective,OgroRef,
+    labels
   )]
   setkey(LocToLabels, MsuID)
   
@@ -91,7 +99,9 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                                                              RapID,
                                                              symbols,
                                                              names,
-                                                             MsuAnnotation)]))
+                                                             MsuAnnotation,
+                                                             OgroObjective,
+                                                             OgroRef)]))
     rownames(LocToLabels.frame) <- LocToLabels.frame$MsuID
     LocToLabels.frame$MsuID <- NULL
     return(LocToLabels.frame)
@@ -104,6 +114,8 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                                                              symbols,
                                                              names,
                                                              MsuAnnotation,
+                                                             OgroObjective,
+                                                             OgroRef,
                                                              labels)]))
     rownames(LocToLabels.frame) <- LocToLabels.frame$MsuID
     LocToLabels.frame$MsuID <- NULL
@@ -119,7 +131,9 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                            symbol_synonyms,
                            names,
                            name_synonyms,
-                           MsuAnnotation)])
+                           MsuAnnotation,
+                           OgroObjective,
+                           OgroRef)])
   }
   
   # short labels and synonyms
@@ -134,5 +148,7 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                          names,
                          name_synonyms,
                          MsuAnnotation,
+                         OgroObjective,
+                         OgroRef,
                          labels)])
 } 

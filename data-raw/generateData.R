@@ -143,8 +143,32 @@ data.table::setkey(RapMsuRefSeq, tigrId)
 # timestamp
 attr(RapMsuRefSeq, "dateRetrieved") <- Sys.time()
 
+# OGRO ----------------------------------------
+
+temp <- tempfile()
+download.file("http://qtaro.abr.affrc.go.jp/ogro/table/export?format=csv", 
+              temp)
+ogro <- data.table(
+  (read.delim(temp, sep = ",", header = TRUE, stringsAsFactors = FALSE)),
+  key = "locus_id")
+
+# remove html quotation marks from objective field
+ogro[, objective := gsub("&quot;", "", objective, fixed = TRUE)]
+# ignore na ids, collapse doi and character
+ogro.processed <- ogro[!is.na(locus_id), .(
+  ogro.objective = paste(unique(objective), collapse = " "),
+  ogro.doi = paste(unique(doi), collapse = ", ")),
+  by = locus_id]
+
+setkey(RAPMSU, Rap_ID)
+rap.msu.ogro <- ogro.processed[RAPMSU]
+setkey(rap.msu.ogro, MSU_ID)
+
+# timestamp
+attr(rap.msu.ogro, "dateRetrieved") <- Sys.time()
+
 # Save data ----------------------------------------
 
 devtools::use_data(RAPMSU, GeneListWithSynonyms, RapMsuRefSeq,
-                   msu.annotation.collapsed, internal = TRUE, 
-    overwrite = TRUE) 
+                   msu.annotation.collapsed, rap.msu.ogro, internal = TRUE, 
+                   overwrite = TRUE) 

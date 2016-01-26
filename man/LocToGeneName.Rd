@@ -20,7 +20,10 @@ data.table including a column with the synonyms for each gene.}
 If \code{return.synonyms} is \code{FALSE}, returns a 
   \code{data.frame} with MSU IDs as \code{rownames}, and columns RapID 
   (RAP-DB gene identifier), symbols (CSGNL recommended symbol), names (CSGNL 
-  recommended name) and MsuAnnotation (TIGR annotations) and optionally 
+  recommended name), MsuAnnotation
+  (\href{http://rice.plantbiology.msu.edu/}{TIGR} annotations), OgroObjective
+  and OgroRef (manual annotation from 
+  \href{http://qtaro.abr.affrc.go.jp/ogro}{OGRO} database) and optionally 
   labels for plotting. If \code{return.synonyms} is \code{TRUE}, returns a 
   \strong{long \code{data.table}} additionally containing columns MsuID, 
   symbol_synonyms and name_synonyms.
