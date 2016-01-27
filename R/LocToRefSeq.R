@@ -20,7 +20,7 @@
 #' @return Returns a list of two \code{data.frame}s, matched for MSU loci that 
 #'   were successfully matched to refSeq IDs and notMatched for ones that 
 #'   weren't. The \code{data.frame}s each have four columns: tigrId (MSU ID), 
-#'   refseqRnaNucleotideAccessionNo (refSeq mRNA ID), rapLocus (Rap-DB ID) and 
+#'   refseq_mrna (refSeq mRNA ID), ensembl_gene_id (Rap-DB ID) and 
 #'   symbols (CSGNL recommended gene symbol(s)).
 #'   
 #' @export
@@ -39,11 +39,13 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
   # fast data.table search: sapply over LOCs with grep, unlist results and
   # select columns to output
   matchedRecords <- RapMsuRefSeq[
-    unique(unlist(sapply(toupper(LOCs), grep, x = toupper(tigrId), fixed = TRUE))),
+    unique(unlist(sapply(toupper(LOCs), grep, x = toupper(tigrId),
+                         fixed = TRUE))),
     list(rapLocus, tigrId, refseqRnaNucleotideAccessionNo)]
   # remove trailing transcript numbers from tigrId and refSeq ID
-  matchedRecords[, `:=`(tigrId, gsub("\\..*$", "", tigrId))][, `:=`(refseqRnaNucleotideAccessionNo, 
-                                                                    gsub("\\..*$", "", refseqRnaNucleotideAccessionNo))]
+  matchedRecords[, tigrId := gsub("\\..*$", "", tigrId)]
+  matchedRecords[, refseqRnaNucleotideAccessionNo := gsub(
+    "\\..*$", "", refseqRnaNucleotideAccessionNo)]
   data.table::setkey(matchedRecords, tigrId, rapLocus)
   
   # search again in RAPMSU for unmatched LOC IDs
@@ -51,33 +53,38 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
   if (length(unmatchedLocs) > 0) {
     message(paste(dateF(), "Searching RAP-DB ID database for", length(unmatchedLocs), 
                   "gene(s) not matched in Oryzabase"))
-    rematchedLocs <- RAPMSU[unmatchedLocs]
+    rematchedLocs <- RAPMSU[MSU_ID %in% unmatchedLocs]
     # remove trailng Tx numbers, remove unmatched locs
-    rematchedLocs <- rematchedLocs[, `:=`(tigrId, gsub("\\..*$", "", 
-                                                       MSU_ID))][, `:=`(rapLocus, toupper(Rap_ID))][, `:=`(Rap_ID, 
-                                                                                                           NULL)][, `:=`(MSU_ID, NULL)][!rapLocus == "NONE"]
+    rematchedLocs[, tigrId := gsub("\\..*$", "", MSU_ID)]
+    rematchedLocs[, rapLocus := toupper(Rap_ID)]
+    rematchedLocs[, c("Rap_ID", "MSU_ID") := NULL]
+    rematchedLocs <- rematchedLocs[!rapLocus == "NONE"]
     data.table::setkey(rematchedLocs, tigrId)
     
     # re-join tables, remove NAs and duplicates
     rematchedRecords <- rbind(matchedRecords, rematchedLocs, fill = TRUE)
-    rematchedRecords[is.na(refseqRnaNucleotideAccessionNo)]$refseqRnaNucleotideAccessionNo <- ""
-    rematchedRecords <- unique(rematchedRecords, by = c("rapLocus", 
-                                                        "tigrId", "refseqRnaNucleotideAccessionNo"))
+    rematchedRecords[is.na(refseqRnaNucleotideAccessionNo),
+                     refseqRnaNucleotideAccessionNo := ""]
+    rematchedRecords <- unique(rematchedRecords,
+                               by = c("rapLocus", "tigrId",
+                                      "refseqRnaNucleotideAccessionNo"))
   } else {
-    rematchedRecords <- unique(matchedRecords, by = c("rapLocus", "tigrId", 
-                                                      "refseqRnaNucleotideAccessionNo"))
+    rematchedRecords <- unique(matchedRecords,
+                               by = c("rapLocus", "tigrId", 
+                                      "refseqRnaNucleotideAccessionNo"))
   }
-  # uppercase rapLocus and setkey for match with ensembl during biomaRt
-  # search
-  rematchedRecords[, `:=`(rapLocus, toupper(rapLocus))]
+  # uppercase rapLocus and setkey for match with ensembl during biomaRt search
+  rematchedRecords[, rapLocus := toupper(rapLocus)]
   data.table::setkey(rematchedRecords, rapLocus)
   
-  unmatchedRecords <- rematchedRecords[refseqRnaNucleotideAccessionNo == 
-                                         ""]
+  unmatchedRecords <- rematchedRecords[refseqRnaNucleotideAccessionNo == ""]
   # only search rapLocus ids that really don't already have a refSeqID
-  unmatchedIds <- unmatchedRecords[!rapLocus %in% rematchedRecords[!refseqRnaNucleotideAccessionNo == 
-                                                                     ""]$rapLocus]$rapLocus
-  
+  matched.so.far <- rematchedRecords[!refseqRnaNucleotideAccessionNo == "",
+                                     rapLocus]
+  unmatchedIds <- unmatchedRecords[rapLocus != "" &
+                                     !rapLocus %in% matched.so.far,
+                                   rapLocus]
+
   # biomaRt search for unmatched records
   if (useBiomart & length(unmatchedIds > 0)) {
     if (!requireNamespace("biomaRt", quietly = TRUE)) {
@@ -85,62 +92,59 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
     }
     
     message("Preparing biomaRt object")
-    ensembl <- biomaRt::useMart(biomart = "ENSEMBL_MART_PLANT", dataset = "osativa_eg_gene")
+    ensembl <- biomaRt::useMart(host = "plants.ensembl.org",
+                                biomart = "plants_mart",
+                                dataset = "osativa_eg_gene")
     
     # search BioMart
     message(paste(dateF(), "Running biomaRt query for", length(unmatchedIds), 
                   "record(s) with no RefSeqID in Oryzabase"))
-    refSeq <- data.table::data.table(biomaRt::getBM(attributes = c("ensembl_gene_id", 
-                                                                   "refseq_mrna"), filters = "ensembl_gene_id", values = unique(unmatchedIds), 
-                                                    mart = ensembl), key = "ensembl_gene_id")
+    refSeq <- data.table(biomaRt::getBM(
+      attributes = c("ensembl_gene_id", "refseq_mrna"),
+      filters = "ensembl_gene_id",
+      values = unique(unmatchedIds), 
+      mart = ensembl))
     # only process records that returned a hit
-    bmMatch <- refSeq[!refseq_mrna == ""][, list(refseq_mrna = paste(refseq_mrna, 
-                                                                     collapse = "/")), by = ensembl_gene_id]
-    
+    bmMatch <- refSeq[!refseq_mrna == "", .(
+      refseqRnaNucleotideAccessionNo = paste(refseq_mrna, collapse = "/")),
+      by = ensembl_gene_id]
+    setkey(bmMatch, ensembl_gene_id, refseqRnaNucleotideAccessionNo)
     # join BM hits to rematchedRecords and remove NAs
+    setkey(rematchedRecords, rapLocus, refseqRnaNucleotideAccessionNo)
     joinedResults <- bmMatch[rematchedRecords]
-    joinedResults[is.na(refseq_mrna)]$refseq_mrna <- ""
+    joinedResults[is.na(refseqRnaNucleotideAccessionNo),
+                  refseqRnaNucleotideAccessionNo := ""]
     
   } else {
     joinedResults <- rematchedRecords
     joinedResults$refseq_mrna <- ""
     data.table::setnames(joinedResults, "rapLocus", "ensembl_gene_id")
   }
+  setnames(joinedResults, "refseqRnaNucleotideAccessionNo", "refseq_mrna")
   message(paste(dateF(), "Merging results"))
   # fast join by tigrId to concatenate duplicates (tigrId with >1
   # rapLocus or refSeqID)
-  
-  # group refSeq IDs, don't group blanks; then group rapLocus IDs, don't
-  # group blanks
-  LocToRefSeq.table <- joinedResults[, list(refseqRnaNucleotideAccessionNo = list(unique(c(refseq_mrna[!refseq_mrna == 
-                                                                                                         ""], refseqRnaNucleotideAccessionNo[!refseqRnaNucleotideAccessionNo == 
-                                                                                                                                               ""]))), rapLocus = list(unique(ensembl_gene_id[!ensembl_gene_id == 
-                                                                                                                                                                                                ""]))), by = tigrId]
+  LocToRefSeq.table <- joinedResults[, .(
+    refseq_mrna = paste(unique(refseq_mrna[!refseq_mrna == ""]), collapse = "/"),
+    ensembl_gene_id = paste(unique(ensembl_gene_id[!ensembl_gene_id == ""]),
+                            collapse =  "/")),
+    by = tigrId]
   
   # add short gene names
   message(paste(dateF(), "Adding short gene names from Oryzabase"))
-  LocToRefSeq.table[, `:=`(symbols, LocToGeneName(LocToRefSeq.table$tigrId)$symbols)]
-  # remove NAs
-  LocToRefSeq.table$symbols[is.na(LocToRefSeq.table$symbols)] <- ""
+  LocToRefSeq.table[, symbols := oryzr::LocToGeneName(tigrId)$symbols,
+                    by = tigrId]
+  LocToRefSeq.table[is.na(symbols), symbols := '']
   
-  # swap commas for slashes
-  swapFunction <- function(x) {
-    sapply(x, paste, collapse = "/")
-  }
-  # rapLocus and RefSeqID are lists of lists, so can use paste to
-  # concatenate and convert to character vector simultaneously, but
-  # symbols is already a character vector, so use gsub instead
-  LocToRefSeq.table[, `:=`(rapLocus, swapFunction(rapLocus))][, `:=`(refseqRnaNucleotideAccessionNo, 
-                                                                     swapFunction(refseqRnaNucleotideAccessionNo))][, `:=`(symbols, 
-                                                                                                                           gsub(",", "/", symbols))]
   setkey(LocToRefSeq.table, tigrId)
+  
   # split into found / not found and return
   
-  matched <- LocToRefSeq.table[!refseqRnaNucleotideAccessionNo == ""]
-  notMatched <- LocToRefSeq.table[refseqRnaNucleotideAccessionNo == ""]
+  matched <- LocToRefSeq.table[!refseq_mrna == ""]
+  notMatched <- LocToRefSeq.table[refseq_mrna == ""]
   
   message(paste(dateF(), "Done. Found refSeqIDs for", dim(matched)[1], 
                 "records"))
   
-  return(list(matched = matched, notMatched = notMatched))
+  list(matched = matched, notMatched = notMatched)
 } 

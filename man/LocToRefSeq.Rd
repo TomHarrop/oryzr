@@ -16,7 +16,7 @@ secondary searches for genes not matched in the Oryzabase data.}
 Returns a list of two \code{data.frame}s, matched for MSU loci that 
   were successfully matched to refSeq IDs and notMatched for ones that 
   weren't. The \code{data.frame}s each have four columns: tigrId (MSU ID), 
-  refseqRnaNucleotideAccessionNo (refSeq mRNA ID), rapLocus (Rap-DB ID) and 
+  refseq_mrna (refSeq mRNA ID), ensembl_gene_id (Rap-DB ID) and 
   symbols (CSGNL recommended gene symbol(s)).
 }
 \description{
