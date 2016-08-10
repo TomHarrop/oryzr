@@ -4,8 +4,9 @@ library(data.table)
 
 # download RAP-MSU from rap-DB and save it as Rdata
 temp <- tempfile()
-download.file("http://rapdb.dna.affrc.go.jp/download/archive/RAP-MSU.txt.gz", 
-    temp)
+rap.msu.url <-
+  "http://rapdb.dna.affrc.go.jp/download/archive/RAP-MSU_2016-08-05.txt.gz"
+download.file(rap.msu.url, temp)
 RAPMSU <- data.table::as.data.table(
   read.delim(temp, sep = "\t", header = FALSE, stringsAsFactors = FALSE,
              col.names = c("Rap_ID", "MSU_Transcripts_dirty")))

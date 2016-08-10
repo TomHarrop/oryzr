@@ -2,5 +2,6 @@
 
 export(LocToGeneName)
 export(LocToRefSeq)
+export(RapToMsu)
 export(SearchByGeneSymbol)
 import(data.table)
