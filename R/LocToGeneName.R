@@ -95,31 +95,30 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   
   # don't return synonyms or labels. In this case return a data.frame.
   if (!shortLabels & !return.synonyms) {
-    LocToLabels.frame <- as.data.frame(unique(LocToLabels[,.(MsuID,
-                                                             RapID,
-                                                             symbols,
-                                                             names,
-                                                             MsuAnnotation,
-                                                             OgroObjective,
-                                                             OgroRef)]))
-    rownames(LocToLabels.frame) <- LocToLabels.frame$MsuID
-    LocToLabels.frame$MsuID <- NULL
-    return(LocToLabels.frame)
+    warning("RAP-DB data changed. LocToGeneName now returns a data.table")
+    return(unique(LocToLabels[,.(MsuID,
+                                 RapID,
+                                 symbols,
+                                 names,
+                                 MsuAnnotation,
+                                 OgroObjective,
+                                 OgroRef)],
+           by = c("MsuID", "symbols", "names", "MsuAnnotation")))
   }
   
   # return short labels, don't return synonyms
   if (shortLabels & !return.synonyms){
-    LocToLabels.frame <- as.data.frame(unique(LocToLabels[,.(MsuID,
-                                                             RapID,
-                                                             symbols,
-                                                             names,
-                                                             MsuAnnotation,
-                                                             OgroObjective,
-                                                             OgroRef,
-                                                             labels)]))
-    rownames(LocToLabels.frame) <- LocToLabels.frame$MsuID
-    LocToLabels.frame$MsuID <- NULL
-    return(LocToLabels.frame)
+    warning("RAP-DB data changed. LocToGeneName now returns a data.table")
+    
+    return(unique(LocToLabels[,.(MsuID,
+                                 RapID,
+                                 symbols,
+                                 names,
+                                 MsuAnnotation,
+                                 OgroObjective,
+                                 OgroRef,
+                                 labels)],
+           by = c("MsuID", "symbols", "names", "MsuAnnotation")))
   }
   
   # don't return short labels, return synonyms
