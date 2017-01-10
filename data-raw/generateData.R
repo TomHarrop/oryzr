@@ -135,7 +135,7 @@ attr(msu.annotation.collapsed, "dateRetrieved") <- Sys.time()
 # download data.table of rice id build table from oryzabase
 temp <- tempfile()
 download.file(
-  "http://www.shigen.nig.ac.jp/rice/oryzabase/tool/riceIdChecker/build5/download", 
+  "http://shigen.nig.ac.jp/rice/oryzabase/tool/riceIdChecker/download", 
   method = "auto", temp)
 RapMsuRefSeq <- data.table::data.table(read.table(unzip(temp, unzip(temp, 
     list = TRUE)[, 1], exdir = "data-raw", overwrite = TRUE), header = TRUE, 
