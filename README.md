@@ -12,6 +12,7 @@ This R package is for converting between different types of gene identifiers for
 -   LocToRefSeq: Convert MSU identifiers to Rap-DB identifiers and map them to RefSeq mRNA identifiers.
 -   SearchByGeneSymbol: Search Rap-DB and oryzabase information by gene symbol and return identifiers for potential matches.
 -   RapToMsu: Convert Rap-DB identifiers to MSU identifiers.
+-   GenomicRangeToGeneName: Return information for all of the genes in a genomic region.
 
 #### Installation
 

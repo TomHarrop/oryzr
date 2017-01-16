@@ -1,6 +1,8 @@
 library(data.table)
 
-# RAP-MSU ----------------------------------------
+###########
+# RAP-MSU #
+###########
 
 # download RAP-MSU from rap-DB and save it as Rdata
 temp <- tempfile()
@@ -22,7 +24,9 @@ setkey(RAPMSU, MSU_ID)
 # timestamp
 attr(RAPMSU, "dateRetrieved") <- Sys.time()
 
-# GeneListById ----------------------------------------
+################
+# GeneListById #
+################
 
 # get a cookie from shigen and extract the jsessionid
 temp <- tempfile()
@@ -116,7 +120,10 @@ data.table::setkey(GeneListWithSynonyms, 'RAP_id')
 # timestamp
 attr(GeneListWithSynonyms, "dateRetrieved") <- Sys.time()
 
-# TIGR annotations ----------------------------------------
+####################
+# TIGR annotations #
+####################
+
 temp <- tempfile()
 download.file("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.locus_brief_info.7.0",
               method = "auto", temp)
@@ -130,7 +137,9 @@ msu.annotation.collapsed <- unique(msu.annotation[, .(
 # timestamp
 attr(msu.annotation.collapsed, "dateRetrieved") <- Sys.time()
 
-# RapMsuRefSeq ----------------------------------------
+################
+# RapMsuRefSeq #
+################
 
 # download data.table of rice id build table from oryzabase
 temp <- tempfile()
@@ -145,7 +154,9 @@ data.table::setkey(RapMsuRefSeq, tigrId)
 # timestamp
 attr(RapMsuRefSeq, "dateRetrieved") <- Sys.time()
 
-# OGRO ----------------------------------------
+########
+# OGRO #
+########
 
 temp <- tempfile()
 download.file("http://qtaro.abr.affrc.go.jp/ogro/table/export?format=csv", 
@@ -169,8 +180,82 @@ setkey(rap.msu.ogro, MSU_ID)
 # timestamp
 attr(rap.msu.ogro, "dateRetrieved") <- Sys.time()
 
-# Save data ----------------------------------------
+###############################
+# MSUv7 GFF for GenomicRanges #
+###############################
+
+# urls
+signon.url <- "https://signon.jgi.doe.gov/signon/create"
+annot.url <- 
+  "http://genome.jgi.doe.gov/Osativa/download/_JAMO/53112ab649607a1be00559b0/Osativa_204_v7.0.gene_exons.gff3.gz"
+
+# check dependencies
+if (!requireNamespace("httr", quietly = TRUE)) {
+  stop("httr needed to download GTF from JGI. Please install it.",
+       call. = FALSE)
+}
+if (!requireNamespace("GenomicRanges", quietly = TRUE)) {
+  stop("GenomicRanges needed to download GTF from JGI. Please install it.",
+       call. = FALSE)
+}
+if (!requireNamespace("rtracklayer", quietly = TRUE)) {
+  stop("rtracklayer needed to download GTF from JGI. Please install it.",
+       call. = FALSE)
+}
+
+# get login/password
+message(
+  paste("You need to provide your JGI login and password to download the",
+        "MSUv7 GFF from Phytozome",
+        sep = "\n")
+  )
+while(is.na(jgi.email)) {
+  jgi.email <- readline("Email address: ")
+  jgi.email <- ifelse(grepl("[^[:blank:]+]@[^[:blank:]+]", jgi.email),
+                      jgi.email,
+                      NA)}
+while(is.na(jgi.password)) {
+  jgi.password <- readline("Password: ")
+  jgi.password <- ifelse(grepl("[[:blank:]]", jgi.password),
+                         NA,
+                         jgi.password)}
+
+# set a handle
+jgi.handle <- httr::handle(url = "http://jgi.doe.gov")
+
+# login
+cookie.response <- httr::POST(
+  url = signon.url,
+  body = list(login = jgi.email,
+              password = jgi.password),
+  encode = "form",
+  handle = jgi.handle)
+
+# get the file
+file.response <- httr::GET(
+  url = annot.url,
+  handle = jgi.handle)
+
+# write to a temporary file
+tmp <- tempfile(fileext = ".gff3.gz")
+writeBin(httr::content(file.response), tmp)
+
+# gffread
+gff <- rtracklayer::import.gff(tmp, format = 'gff3',
+                               genome = 'Osativa_204_v7',
+                               feature.type="exon")
+gff.exons <- GenomicRanges::split(
+  x = gff,
+  f = GenomicRanges::elementMetadata(gff)$Parent)[[1]]
+
+# timestamp
+attr(gff.exons, "dateRetrieved") <- Sys.time()
+
+#############
+# Save data #
+#############
 
 devtools::use_data(RAPMSU, GeneListWithSynonyms, RapMsuRefSeq,
-                   msu.annotation.collapsed, rap.msu.ogro, internal = TRUE, 
+                   msu.annotation.collapsed, rap.msu.ogro, gff.exons,
+                   internal = TRUE, 
                    overwrite = TRUE) 

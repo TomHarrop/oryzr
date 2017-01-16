@@ -9,27 +9,27 @@ LocToGeneName(LOCs, shortLabels = FALSE, return.synonyms = FALSE)
 \arguments{
 \item{LOCs}{Character vector of MSU locus identifiers}
 
-\item{shortLabels}{Boolean (default \code{FALSE}). Tries to return a sensible
-label \emph{e.g.} for plotting: either the LOC_ID for unnamed genes or the 
-name for named genes, with synonyms in brackets.}
+\item{shortLabels}{Boolean (default \code{FALSE}). Tries to return a 
+sensible label \emph{e.g.} for plotting: either the LOC_ID for unnamed 
+genes or the name for named genes, with synonyms in brackets.}
 
-\item{return.synonyms}{Boolean (default \code{FALSE}). Return a \strong{long}
-data.table including a column with the synonyms for each gene.}
+\item{return.synonyms}{Boolean (default \code{FALSE}). Return a 
+\strong{long} data.table including a column with the synonyms for each 
+gene.}
 }
 \value{
-If \code{return.synonyms} is \code{FALSE}, returns a 
-  \code{data.frame} with MSU IDs as \code{rownames}, and columns RapID 
-  (RAP-DB gene identifier), symbols (CSGNL recommended symbol), names (CSGNL 
-  recommended name), MsuAnnotation
-  (\href{http://rice.plantbiology.msu.edu/}{TIGR} annotations), OgroObjective
-  and OgroRef (manual annotation from 
+Returns a \code{data.table} with columns MsuID (MSUv7 gene 
+  identifier), RapID (RAP-DB gene identifier), symbols (CSGNL recommended 
+  symbol), names (CSGNL recommended name), MsuAnnotation 
+  (\href{http://rice.plantbiology.msu.edu/}{TIGR} annotations), 
+  OgroObjective and OgroRef (manual annotation from 
   \href{http://qtaro.abr.affrc.go.jp/ogro}{OGRO} database) and optionally 
   labels for plotting. If \code{return.synonyms} is \code{TRUE}, returns a 
-  \strong{long \code{data.table}} additionally containing columns MsuID, 
+  \strong{long \code{data.table}} additionally containing columns
   symbol_synonyms and name_synonyms.
 }
 \description{
-Convert MSU identifiers to CSGNL gene names and symbols and generate a label 
+Convert MSU identifiers to CSGNL gene names and symbols and generate a label
 for plotting if requested.
 }
 \details{
