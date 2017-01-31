@@ -24,7 +24,7 @@ Returns a \code{data.table} of annotated genes found in the MSUv7
 Return information for all of the genes in a genomic region.
 }
 \seealso{
-\link{\code{LocToGeneName}} for a description of the returned
+\code{LocToGeneName} for a description of the returned
   \code{data.table}.
 }
 

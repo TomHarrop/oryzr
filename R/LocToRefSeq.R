@@ -132,7 +132,7 @@ LocToRefSeq <- function(LOCs, useBiomart = TRUE) {
   
   # add short gene names
   message(paste(dateF(), "Adding short gene names from Oryzabase"))
-  LocToRefSeq.table[, symbols := oryzr::LocToGeneName(tigrId)$symbols,
+  LocToRefSeq.table[, symbols := LocToGeneName(tigrId)$symbols,
                     by = tigrId]
   LocToRefSeq.table[is.na(symbols), symbols := '']
   

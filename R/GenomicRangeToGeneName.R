@@ -11,7 +11,7 @@
 #' @return Returns a \code{data.table} of annotated genes found in the MSUv7 
 #'   GFF between \code{start} and \code{end} on chromosome \code{seqnames}.
 #'   
-#' @seealso \link{\code{LocToGeneName}} for a description of the returned
+#' @seealso \code{LocToGeneName} for a description of the returned
 #'   \code{data.table}.
 #'   
 #' @import data.table
