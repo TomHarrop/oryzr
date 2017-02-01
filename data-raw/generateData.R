@@ -125,10 +125,9 @@ attr(GeneListWithSynonyms, "dateRetrieved") <- Sys.time()
 ####################
 
 temp <- tempfile()
-download.file("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.locus_brief_info.7.0",
+download.file("http://rice.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.locus_brief_info.7.0", 
               method = "auto", temp)
-msu.annotation <- data.table(read.delim(file = temp, sep = "\t",header = TRUE,
-                      fill = TRUE), key = 'locus')  
+msu.annotation <- fread(temp, key = "locus")
 # get 1 annotation per LOC ID
 msu.annotation.collapsed <- unique(msu.annotation[, .(
   annotation = paste(unique(annotation), collapse = ", ")),
