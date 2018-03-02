@@ -14,4 +14,3 @@ Show the dates when the databases (RAP-DB to MSU IDs, OryzabaseGeneListEn and
 Rice ID IRGSP Build5 database) were last downloaded to generate
 \code{R/sysdata.rda}.
 }
-

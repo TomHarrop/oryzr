@@ -43,4 +43,3 @@ verified.
 SearchByGeneSymbol(c('FON1'))
 SearchByGeneSymbol(c('SPL7'))
 }
-

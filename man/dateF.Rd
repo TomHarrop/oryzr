@@ -9,4 +9,3 @@ dateF()
 \description{
 date formatted for console messages
 }
-

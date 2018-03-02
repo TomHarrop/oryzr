@@ -27,4 +27,3 @@ Return information for all of the genes in a genomic region.
 \code{LocToGeneName} for a description of the returned
   \code{data.table}.
 }
-
