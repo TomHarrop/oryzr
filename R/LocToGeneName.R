@@ -95,7 +95,6 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
   
   # don't return synonyms or labels. In this case return a data.frame.
   if (!shortLabels & !return.synonyms) {
-    warning("RAP-DB data changed. LocToGeneName now returns a data.table")
     return(unique(LocToLabels[,.(MsuID,
                                  RapID,
                                  symbols,
