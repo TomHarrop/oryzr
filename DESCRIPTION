@@ -1,7 +1,7 @@
 Package: oryzr
 Type: Package
 Title: Work with Oryza sativa gene identifiers
-Version: 0.1.23
+Version: 0.1.24
 Date: 2015-04-23
 Authors@R: person("Tom", "Harrop", email = "twharrop@gmail.com", 
        role = c("aut", "cre"))
@@ -20,4 +20,4 @@ Suggests:
 Depends:
     R (>= 3.2.0)
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

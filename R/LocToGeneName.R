@@ -91,8 +91,11 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
     RapID,symbols,names,symbol_synonyms,name_synonyms,OgroObjective,OgroRef,
     labels
   )]
+  setorderv(LocToLabels,
+          c("MsuID", "symbols", "names", "MsuAnnotation"),
+          na.last = TRUE)
   setkey(LocToLabels, MsuID)
-  
+
   # don't return synonyms or labels. In this case return a data.frame.
   if (!shortLabels & !return.synonyms) {
     return(unique(LocToLabels[,.(MsuID,
@@ -102,7 +105,7 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                                  MsuAnnotation,
                                  OgroObjective,
                                  OgroRef)],
-           by = c("MsuID", "symbols", "names", "MsuAnnotation")))
+           by = c("MsuID")))
   }
   
   # return short labels, don't return synonyms
@@ -115,7 +118,7 @@ LocToGeneName <- function(LOCs, shortLabels = FALSE, return.synonyms = FALSE) {
                                  OgroObjective,
                                  OgroRef,
                                  labels)],
-           by = c("MsuID", "symbols", "names", "MsuAnnotation")))
+           by = c("MsuID")))
   }
   
   # don't return short labels, return synonyms
